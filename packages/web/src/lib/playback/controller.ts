@@ -35,7 +35,7 @@ export interface PlayerState {
 }
 
 /** What some players add to what a browser's video can do. */
-export type PlayerFeature = 'audio' | 'chapters' | 'stats';
+export type PlayerFeature = 'audio' | 'chapters' | 'stats' | 'headers';
 
 /** Engines that list a file's audio tracks let the page's own video switch them. */
 export const browserFeatures: readonly PlayerFeature[] =
@@ -89,6 +89,8 @@ export interface PlayerController {
   queueNext?: (episode: QueuedEpisode) => void;
   /** Whether the app's sound settings apply, which they do to its own player. */
   sound?: boolean;
+  /** Whether the picture follows the page's fit setting. */
+  fit?: boolean;
   /** Plays the file again after it failed, from where it stopped or on another engine. */
   retry?: { label: string; run(): void };
 }
@@ -98,21 +100,19 @@ export interface QueuedEpisode {
   source: SourceInfo;
   startMs: number;
   url: string;
+  headers?: Record<string, string>;
 }
 
 export interface PlayerOptions {
+  client: JellyfinClient;
+  item: BaseItemDto;
   source: SourceInfo;
+  url: string;
+  headers?: Record<string, string>;
   startMs: number;
   onEnded(): void;
   prefs?: PlaybackPrefs;
   subtitleStyle?: SubtitleStyle;
-}
-
-/** For players drawn beneath the page, which load the stream themselves. */
-export interface NativePlayerOptions extends PlayerOptions {
-  client: JellyfinClient;
-  item: BaseItemDto;
-  url: string;
   /** Where an external subtitle is, when not the server's address, as for a download. */
   subtitleUrl?: (stream: MediaStream) => string | null;
   /** Plays in this player's own window instead. */

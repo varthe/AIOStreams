@@ -30,7 +30,6 @@ import {
 import { cn } from '@aiostreams/ui/core/styling';
 import { clock } from '../../lib/format';
 import { currentHost } from '../../lib/hosts';
-import { appBridge } from '../../lib/hosts/shell/bridge';
 import { chapterAt } from '../../lib/playback/chapters';
 import type { PlayerController, Track } from '../../lib/playback/controller';
 import {
@@ -184,12 +183,8 @@ const FIT_ICONS: Record<VideoFit, React.ReactNode> = {
   stretch: <LuStretchHorizontal />,
 };
 
-/** Whether the page decides how the picture fits; a player in its own window does that itself. */
-export const canFit = (player: PlayerController) =>
-  (!currentHost().usePlayer || !!appBridge()) && !player.external;
-
 function FitButton({ notice }: { notice: (text: string) => void }) {
-  const [fit, setFit] = useSetting(settings.videoFit);
+  const [fit, setFit] = useSetting(settings.video.fit);
   const next = VIDEO_FITS[(VIDEO_FITS.indexOf(fit) + 1) % VIDEO_FITS.length];
   return (
     <ControlButton
@@ -294,9 +289,9 @@ function SubtitleStyleSteppers() {
 }
 
 function SoundControls() {
-  const [boost, setBoost] = useSetting(settings.sound.dialogueBoost);
-  const [nightMode, setNightMode] = useSetting(settings.sound.nightMode);
-  const [delay, setDelay] = useSetting(settings.sound.delayMs);
+  const [boost, setBoost] = useSetting(settings.audio.dialogueBoost);
+  const [nightMode, setNightMode] = useSetting(settings.audio.nightMode);
+  const [delay, setDelay] = useSetting(settings.audio.delayMs);
   const at = DIALOGUE_BOOSTS.indexOf(boost);
   return (
     <>
@@ -525,7 +520,7 @@ export function OptionButtons({
           onOpenChange={onMenu}
         />
       )}
-      {canFit(player) && <FitButton notice={notice} />}
+      {player.fit && <FitButton notice={notice} />}
       {player.stats && (
         <Menu
           name="statistics"
