@@ -306,6 +306,22 @@ pub fn run(app: App) {
     content.register_script_message_handler("ipc", None);
     let settings = webkit6::Settings::new();
     settings.set_enable_developer_extras(args.devtools);
+    // Use the older TextureMapper compositor and redraw in full: Skia compositing (2.54+) flashes
+    // stale opacity when an animation ends, and partial redraws leave parts of the page stale.
+    if let Some(features) = webkit6::Settings::all_features() {
+        for feature in (0..features.length()).filter_map(|i| features.get(i)) {
+            if let Some(id) = feature.identifier()
+                && matches!(
+                    id.as_str(),
+                    "UseSkiaForComposition"
+                        | "UseDamagingInformationForCompositing"
+                        | "PropagateDamagingInformation"
+                )
+            {
+                settings.set_feature_enabled(&feature, false);
+            }
+        }
+    }
     let webview = webkit6::WebView::builder()
         .web_context(&context)
         .network_session(&session)

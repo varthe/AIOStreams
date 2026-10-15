@@ -85,8 +85,7 @@ none, so a driver's own loader always wins.
 
 ### Linux
 
-Needs Rust, GTK 4.14 or later, WebKitGTK 6 and libmpv 0.38 or later: Ubuntu 25.04, Fedora 41 or
-newer.
+Needs Rust, GTK 4.14 or later, WebKitGTK 6 (2.42 or later) and libmpv 0.38 or later: Ubuntu 25.04, Fedora 41 or newer.
 
 ```sh
 sudo apt install libgtk-4-dev libwebkitgtk-6.0-dev libmpv-dev   # Fedora: gtk4-devel webkitgtk6.0-devel mpv-libs-devel
@@ -120,12 +119,12 @@ from a release build.
 
 ### Flags
 
-| Flag                          | Does                                                                            |
-| ----------------------------- | ------------------------------------------------------------------------------- |
+| Flag                          | Does                                                                   |
+| ----------------------------- | ---------------------------------------------------------------------- |
 | `--web <url>`                 | Loads this page instead, e.g. `pnpm -F @aiostreams/web dev:standalone` |
-| `--web-dir <dir>`             | Serves the standalone build from this folder                                    |
-| `--devtools`                  | Allows DevTools in a release build                                              |
-| `--remote-debugging-port <n>` | Opens the web view's debugging port, for driving tests                          |
+| `--web-dir <dir>`             | Serves the standalone build from this folder                           |
+| `--devtools`                  | Allows DevTools in a release build                                     |
+| `--remote-debugging-port <n>` | Opens the web view's debugging port, for driving tests                 |
 
 `AIOSTREAMS_LIBMPV` and `AIOSTREAMS_WEB_DIR` point at libmpv and the standalone build too.
 
