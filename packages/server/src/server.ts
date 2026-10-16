@@ -8,6 +8,7 @@ import {
   settleMetricsHistory,
   stopMetricsHistory,
 } from './utils/system-metrics.js';
+import { attachPartyRelay, closePartyRelay } from './party/relay.js';
 import { startNfsShare, stopNfsShare } from './nfs.js';
 import { startFuseMount, stopFuseMount } from './fuse.js';
 
@@ -22,6 +23,7 @@ import {
   UserRepository,
   logStartupInfo,
   Cache,
+  sharedBackend,
   RegexAccess,
   SelAccess,
   AnimeDatabase,
@@ -425,6 +427,7 @@ async function start() {
       )
       .catch((error) => logger.warn('Failed to alias proxied nzbs:', error));
     await initialiseAuth();
+    await sharedBackend().start();
     startAnalytics();
     await startNfsShare();
     await startFuseMount();
@@ -439,6 +442,7 @@ async function start() {
       settleMetricsHistory();
     });
     attachJellyfinWebSocket(server);
+    attachPartyRelay(server);
   } catch (error) {
     if (error instanceof ConfigStartupError) throw error;
     logger.error('Failed to start server:', error);
@@ -458,6 +462,10 @@ async function shutdown() {
   await flushAllDiskCaches().catch(() => undefined);
   await flushWatchState().catch(() => undefined);
   await flushPendingIds().catch(() => undefined);
+  await closePartyRelay();
+  await sharedBackend()
+    .stop()
+    .catch(() => undefined);
   await Cache.close();
   RegexAccess.cleanup();
   SelAccess.cleanup();
